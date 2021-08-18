@@ -1,12 +1,14 @@
 import "./App.css";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
+
 import {
-  ADD_TODO,
-  CHANGE_STATUS,
-  REMOVE_TODO,
-  SET_TODOS,
-} from "./redux/actions/todos/todosTypes";
+  handleDelete,
+  handleAdd,
+  handleComplete,
+  handleRestore,
+  handleSet,
+} from "./redux/actions/todos/todos";
 
 const tabs = [
   {
@@ -37,46 +39,9 @@ function App() {
     fetch("https://jsonplaceholder.typicode.com/users/1/todos")
       .then((res) => res.json())
       .then((result) => {
-        dispatch({
-          type: SET_TODOS,
-          payload: result.map(({ userId, id, title, completed }) => ({
-            userId,
-            id,
-            title,
-            status: "new",
-          })),
-        });
+        handleSet(dispatch)(result);
       });
   }, []);
-
-  const handleDelete = (el) => {
-    dispatch({
-      type: CHANGE_STATUS,
-      payload: { id: el.id, status: "deleted" },
-    });
-  };
-
-  const handleAdd = () => {
-    dispatch({
-      type: ADD_TODO,
-      payload: { title: todo },
-    });
-    setTodo("");
-  };
-
-  const handleComplete = (el) => {
-    dispatch({
-      type: CHANGE_STATUS,
-      payload: { id: el.id, status: "completed" },
-    });
-  };
-
-  const handleRestore = (el) => {
-    dispatch({
-      type: CHANGE_STATUS,
-      payload: { id: el.id, status: "new" },
-    });
-  };
 
   return (
     <div className="App">
@@ -88,7 +53,14 @@ function App() {
           value={todo}
           onChange={(e) => setTodo(e.target.value)}
         />
-        <button onClick={() => handleAdd()}>Add</button>
+        <button
+          onClick={() => {
+            handleAdd(dispatch)(todo);
+            setTodo("");
+          }}
+        >
+          Add
+        </button>
       </div>
       {/* Tabs */}
       <div className="tabs">
@@ -118,7 +90,9 @@ function App() {
                     <span
                       style={{ marginRight: "6px" }}
                       onClick={() =>
-                        activeTab !== 2 ? handleComplete(el) : handleRestore(el)
+                        activeTab !== 2
+                          ? handleComplete(dispatch)(el)
+                          : handleRestore(dispatch)(el)
                       }
                     >
                       {activeTab === 0
@@ -128,7 +102,9 @@ function App() {
                         : "Restore"}
                     </span>
                     {activeTab === 0 && (
-                      <span onClick={() => handleDelete(el)}>&#x274C;</span>
+                      <span onClick={() => handleDelete(dispatch)(el)}>
+                        &#x274C;
+                      </span>
                     )}
                   </span>
                 </div>
