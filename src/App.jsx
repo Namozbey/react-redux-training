@@ -83,7 +83,15 @@ function App() {
             (el, index) =>
               el.status === tabs[activeTab].value && (
                 <div className="item">
-                  <span className="title">{el.title}</span>
+                  <span
+                    className="title"
+                    style={{
+                      textDecoration:
+                        el.status === "completed" && "line-through",
+                    }}
+                  >
+                    {el.title}
+                  </span>
 
                   <span>
                     <span className="status">{el.status}</span>
@@ -101,7 +109,7 @@ function App() {
                         ? null
                         : "Restore"}
                     </span>
-                    {activeTab === 0 && (
+                    {activeTab !== 2 && (
                       <span onClick={() => handleDelete(dispatch)(el)}>
                         &#x274C;
                       </span>
